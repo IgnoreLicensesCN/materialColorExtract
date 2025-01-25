@@ -345,11 +345,21 @@ for k in materialMappings.keys():
         print('\033[38;2;%d;%d;%dm%s %s\033[0m' % (
             colorR, colorG, colorB, k, materialMappings[k]))
         for m in materialMappings[k]:
+            colorStringR = hex(colorR)[2:]
+            if len(colorStringR) < 2:
+                colorStringR = '0'+colorStringR
+            colorStringG = hex(colorG)[2:]
+            if len(colorStringG) < 2:
+                colorStringG = '0'+colorStringG
+            colorStringB = hex(colorB)[2:]
+            if len(colorStringB) < 2:
+                colorStringB = '0'+colorStringB
+            colorString = '#'+colorStringR+colorStringG+colorStringB
             if m.startswith('LEGACY_'):
                 m = m[7:]
-                legacyMaterialToPut.append((m,hex((colorR<<16) + (colorG<<8) + colorB).replace('0x','#')))
+                legacyMaterialToPut.append((m,colorString))
             else:
-                materialToPut.append((m, hex((colorR << 16) + (colorG << 8) + colorB).replace('0x', '#')))
+                materialToPut.append((m, colorString))
     except Exception as e:
         if specificContainsMap[k] is None:
             cannotFindColor.append(k)
