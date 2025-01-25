@@ -2,3 +2,5 @@
 /textures1206/
 /.idea/
 .gitignore
+/legacyMaterialColorMap
+/materialColorMap
