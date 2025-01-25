@@ -35,11 +35,13 @@ def visualize_colors(cluster, centroids):
     # return rect
 
 
-def averageColorFromFileName(fileName: str):
+def averageColorFromFileName(fileName: str, startX=-1,endX=0,startY=-1,endY=0):
     """not really average,just pick as a standard"""
     if not os.path.exists(fileName):
         raise FileNotFoundError(fileName + "   does not exist")
     image = cv2.imread(fileName)
+    if startX >= 0 and endX != 0 and startY > 0 and endY != 0:
+        image = image[startY:endY,startX:endX]
     # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     reshape = image.reshape((image.shape[0] * image.shape[1], 3))
 

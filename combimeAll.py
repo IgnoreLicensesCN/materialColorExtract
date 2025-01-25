@@ -1,9 +1,11 @@
 import os.path
 from collections import defaultdict
-import cv2, numpy as np
-from sklearn.cluster import KMeans
-from extractMaterialNames import materialNamesFromFile
+
+import numpy as np
+
 from colorFromImage import averageColorFromFileName
+from extractMaterialNames import materialNamesFromFile
+from hashString import hashStringLikeJava
 
 
 def switchFileName(material: str):
@@ -35,8 +37,28 @@ textureFolderName = 'textures/textures1214/'
 allMaterials = materialNamesFromFile('materialsFromSpigotAPI1214.html')
 
 specificContains: list[tuple[str, np.array]] = [
+
+    ('_BANNER_PATTERN', averageColorFromFileName(switchFileName('CREEPER_BANNER_PATTERN'))),
+    ('_POTTERY_SHERD', averageColorFromFileName(switchFileName('SCRAPE_POTTERY_SHERD'))),
+
+    ('SLIME', averageColorFromFileName(switchFileName('SLIME_BLOCK'))),
+    ('WITHER', np.array([0x39, 0x39, 0x39])),
+    ('ZOMBIE',averageColorFromFileName(textureFolderName + 'entity/zombie/zombie.png', startX=8, endX=16, startY=8, endY=16)),
+    ('PLAYER', averageColorFromFileName(textureFolderName + 'entity/player/wide/steve.png', startX=8, endX=16, startY=8,endY=16)),
+    ('CREEPER',averageColorFromFileName(textureFolderName + 'entity/creeper/creeper.png', startX=8, endX=16, startY=8, endY=16)),
+    ('SKELETON',averageColorFromFileName(textureFolderName + 'entity/skeleton/skeleton.png', startX=8, endX=16, startY=8,endY=16)),
+    ('PIGLIN',averageColorFromFileName(textureFolderName + 'entity/piglin/piglin.png', startX=8, endX=16, startY=8,endY=16)),
+    ('PHANTOM',averageColorFromFileName(textureFolderName + 'entity/phantom.png', startX=6, endX=13, startY=6,endY=9)),
+    ('BEE_',averageColorFromFileName(switchFileName('HONEY_BLOCK'))),
+    ('BEEHIVE',averageColorFromFileName(switchFileName('HONEY_BLOCK'))),
+    ('BREEZE',averageColorFromFileName(textureFolderName + 'entity/breeze/breeze.png', startX=8, endX=16, startY=8, endY=16)),
+    ('GOAT',averageColorFromFileName(textureFolderName + 'entity/goat/goat.png', startX=17, endX=27, startY=17,endY=28)),
+
     ('MUSIC_DISC_', averageColorFromFileName(textureFolderName + 'item/music_disc_precipice.png')),
     ('LEGACY_RECORD', averageColorFromFileName(textureFolderName + 'item/music_disc_precipice.png')),
+    ('DISC_FRAGMENT_5', averageColorFromFileName(textureFolderName + 'item/music_disc_precipice.png')),
+    ('CANDLE', averageColorFromFileName(textureFolderName + 'item/candle.png')),
+    ('LEGACY_EXP_BOTTLE', averageColorFromFileName(switchFileName('EXPERIENCE_BOTTLE'))),
     ('END_STONE', averageColorFromFileName(textureFolderName + 'block/end_stone.png')),
     ('PRISMARINE', averageColorFromFileName(textureFolderName + 'item/prismarine_shard.png')),
     ('MELON', averageColorFromFileName(textureFolderName + 'block/melon_top.png')),
@@ -45,8 +67,6 @@ specificContains: list[tuple[str, np.array]] = [
     ('ICE', averageColorFromFileName(textureFolderName + 'block/ice.png')),
     ('HONEY', averageColorFromFileName(textureFolderName + 'item/honeycomb.png')),
     ('_LEAVES', np.array([0x59, 0xae, 0x30])),
-    ('SKELETON', averageColorFromFileName(textureFolderName + 'item/bone.png')),
-    ('WITHER', np.array([0x39, 0x39, 0x39])),
     ('COAL', np.array([0x39, 0x39, 0x39])),
     ('BLACK_', np.array([0x39, 0x39, 0x39])),
     ('ANCIENT_DEBRIS', np.array([87, 56, 48])),
@@ -64,11 +84,11 @@ specificContains: list[tuple[str, np.array]] = [
     ('MOSS_', averageColorFromFileName(textureFolderName + 'block/moss_block.png')),
     ('MOSSY_', averageColorFromFileName(textureFolderName + 'block/moss_block.png')),
     ('BOWL', averageColorFromFileName(textureFolderName + 'item/bowl.png')),
-    # ('NETHER_BRICK', averageColorFromFileName(textureFolderName + 'item/nether_brick.png')),
-    # ('BRICK', averageColorFromFileName(textureFolderName + 'item/brick.png')),
+    ('PITCHER', averageColorFromFileName(switchFileName('PITCHER_CROP'))),
     ('BOOKSHELF', averageColorFromFileName(textureFolderName + 'block/bookshelf.png')),
     ('DRIPLEAF', averageColorFromFileName(textureFolderName + 'block/big_dripleaf_top.png')),
-    ('CHORUS', averageColorFromFileName(textureFolderName + 'item/chorus_fruit.png')),
+    ('CHORUS', averageColorFromFileName(switchFileName("PURPUR_BLOCK"))),
+    ('DRAGON', averageColorFromFileName(switchFileName("PURPUR_BLOCK"))),
     ('PURPUR', averageColorFromFileName(textureFolderName + 'block/purpur_block.png')),
     ('SOUL_SAND', averageColorFromFileName(textureFolderName + 'block/soul_sand.png')),
     ('SOUL_SOIL', averageColorFromFileName(textureFolderName + 'block/soul_sand.png')),
@@ -78,8 +98,7 @@ specificContains: list[tuple[str, np.array]] = [
     ('GLOWSTONE', averageColorFromFileName(textureFolderName + 'block/glowstone.png')),
     ('ENDER', averageColorFromFileName(textureFolderName + 'item/ender_pearl.png')),
     ('END_', averageColorFromFileName(textureFolderName + 'item/ender_pearl.png')),
-    ('DRAGON_EGG', averageColorFromFileName(textureFolderName + 'item/ender_pearl.png')),
-    ('CHEST', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('SHIELD', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
     ('LEGACY_SEEDS', averageColorFromFileName(textureFolderName + 'item/wheat.png')),
     ('WHEAT', averageColorFromFileName(textureFolderName + 'item/wheat.png')),
     ('BREAD', averageColorFromFileName(textureFolderName + 'item/bread.png')),
@@ -98,45 +117,160 @@ specificContains: list[tuple[str, np.array]] = [
     ('MILK', averageColorFromFileName(textureFolderName + 'item/bone.png')),
     ('BUCKET', averageColorFromFileName(textureFolderName + 'item/bucket.png')),
     ('POTION', averageColorFromFileName(textureFolderName + 'block/glass.png')),
+    ('_AIR', np.array([0xa0, 0xa0, 0xa0])),
     ('OBSIDIAN', averageColorFromFileName(textureFolderName + 'block/obsidian.png')),
     ('RED_NETHER_BRICK', averageColorFromFileName(textureFolderName + 'block/red_nether_bricks.png')),
     ('DECORATED_POT', averageColorFromFileName(textureFolderName + 'entity/decorated_pot/decorated_pot_base.png')),
     ('OXEYE_DAISY', averageColorFromFileName(switchFileName('OXEYE_DAISY'))),
     ('CARROT', averageColorFromFileName(switchFileName('CARROT'))),
     ('POTATO', averageColorFromFileName(switchFileName('POTATO'))),
-    # ('AIR', np.array([0xa0, 0xa0, 0xa0])),
+    ('COCOA', averageColorFromFileName(switchFileName('COCOA_BEANS'))),
+    ('LEGACY_WOOD', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_DIODE', averageColorFromFileName(switchFileName('REDSTONE'))),
+    ('LEGACY_COMMAND', averageColorFromFileName(switchFileName('COMMAND_BLOCK'))),
+    ('TRIPWIRE', averageColorFromFileName(switchFileName('IRON_INGOT'))),
+    ('WEEPING_VINES', averageColorFromFileName(switchFileName('CRIMSON_PLANKS'))),
+    ('DRIED_KELP', averageColorFromFileName(textureFolderName + 'item/dried_kelp.png')),
+    ('KELP', averageColorFromFileName(textureFolderName + 'item/kelp.png')),
+
+    ('SPIDER_EYE', averageColorFromFileName(switchFileName('FERMENTED_SPIDER_EYE'))),
 ]
-specificContainsMap: dict[[str, np.array]] = {}
-meetEndings: list[str] = ['_PLANKS', '_INGOT', '_SHARD', '_WEB', '_SCRAP', '_DYE', '_POTTERY_SHERD', '_CORAL_BLOCK',
+defined: list[tuple[str, np.array]] = [
+    ('AIR', np.array([0xa0, 0xa0, 0xa0])),
+    ('FIRE', averageColorFromFileName(textureFolderName + 'block/fire_0.png')),
+    ('LEGACY_FIRE', averageColorFromFileName(textureFolderName + 'block/fire_0.png')),
+    ('LEGACY_LOG', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_LOG_2', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_BED_BLOCK', averageColorFromFileName(switchFileName('RED_WOOL'))),
+    ('LEGACY_BED', averageColorFromFileName(switchFileName('RED_WOOL'))),
+    ('LEGACY_SAPLING', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_STEP', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_DOUBLE_STEP', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_SIGN_POST', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_WALL_SIGN', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_TRAP_DOOR', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_MUSHROOM_SOUP', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_SIGN', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_BOAT', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_FENCE', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_FENCE_GATE', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_SMOOTH_STAIRS', averageColorFromFileName(textureFolderName + 'block/stone.png')),
+    ('LEGACY_COBBLE_WALL', averageColorFromFileName(textureFolderName + 'block/cobblestone.png')),
+    ('LEVER', averageColorFromFileName(textureFolderName + 'block/cobblestone.png')),
+    ('LEGACY_LEVER', averageColorFromFileName(textureFolderName + 'block/cobblestone.png')),
+    ('LEGACY_NETHER_FENCE', averageColorFromFileName(textureFolderName + 'block/nether_bricks.png')),
+    ('LEGACY_WORKBENCH', averageColorFromFileName(switchFileName('CRAFTING_TABLE'))),
+    ('LEGACY_WOOL', averageColorFromFileName(switchFileName('WHITE_WOOL'))),
+    ('LEGACY_BANNER', averageColorFromFileName(switchFileName('WHITE_WOOL'))),
+    ('LEGACY_CARPET', averageColorFromFileName(switchFileName('WHITE_WOOL'))),
+    ('LEGACY_WALL_BANNER', averageColorFromFileName(switchFileName('WHITE_WOOL'))),
+    ('LEGACY_STANDING_BANNER', averageColorFromFileName(switchFileName('WHITE_WOOL'))),
+    ('LEGACY_CONCRETE', averageColorFromFileName(switchFileName('WHITE_WOOL'))),
+    ('LEGACY_CONCRETE_POWDER', averageColorFromFileName(switchFileName('WHITE_WOOL'))),
+    ('LEGACY_WEB', averageColorFromFileName(switchFileName('COBWEB'))),
+    ('COBWEB', averageColorFromFileName(switchFileName('COBWEB'))),
+    ('LEGACY_PORTAL', averageColorFromFileName(switchFileName('NETHER_PORTAL'))),
+    ('LEGACY_CROPS', averageColorFromFileName(switchFileName('WHEAT'))),
+    ('LEGACY_HUGE_MUSHROOM_1', averageColorFromFileName(switchFileName('BROWN_WOOL'))),
+    ('LEGACY_HUGE_MUSHROOM_2', averageColorFromFileName(switchFileName('BROWN_WOOL'))),
+    ('LEGACY_SKULL', averageColorFromFileName(textureFolderName + 'entity/skeleton/skeleton.png', startX=8, endX=16, startY=8,endY=16)),
+    ('LEGACY_DOUBLE_PLANT', np.array([0x79, 0xc0, 0x5a])),
+    ('TORCH', np.array([255, 216, 0])),
+    ('WALL_TORCH', np.array([255, 216, 0])),
+    ('LEGACY_TORCH', np.array([255, 216, 0])),
+
+    ('LEGACY_ENCHANTMENT_TABLE', averageColorFromFileName(switchFileName('RESPAWN_ANCHOR'))),
+    ('ENCHANTING_TABLE', averageColorFromFileName(switchFileName('RESPAWN_ANCHOR'))),
+    ('RESPAWN_ANCHOR', averageColorFromFileName(switchFileName('RESPAWN_ANCHOR'))),
+
+    ('LEGACY_WATCH', averageColorFromFileName(switchFileName('CLOCK'))),
+    ('LEGACY_COOKED_FISH', averageColorFromFileName(switchFileName('CLOCK'))),
+    ('LEGACY_RAW_FISH', np.array([104,157,143])),
+
+    ('LEGACY_GRILLED_PORK', averageColorFromFileName(switchFileName('COOKED_PORKCHOP'))),
+    ('LEGACY_PORK', averageColorFromFileName(switchFileName('PORKCHOP'))),
+
+    ('LEGACY_SULPHUR', averageColorFromFileName(switchFileName('GUNPOWDER'))),
+    ('FLOWER_POT', averageColorFromFileName(switchFileName('BRICKS'))),
+    ('LEGACY_FLOWER_POT', averageColorFromFileName(switchFileName('BRICKS'))),
+    ('LEGACY_FLOWER_POT_ITEM', averageColorFromFileName(switchFileName('BRICKS'))),
+
+    ('LEGACY_FIREBALL', averageColorFromFileName(switchFileName('FIRE_CHARGE'))),
+    ('LEGACY_FIREWORK', averageColorFromFileName(switchFileName('FIRE_CHARGE'))),
+    ('FIREWORK_ROCKET', averageColorFromFileName(switchFileName('FIRE_CHARGE'))),
+    ('LEGACY_FIREWORK_CHARGE', averageColorFromFileName(switchFileName('FIRE_CHARGE'))),
+
+    ('LEGACY_LEASH', averageColorFromFileName(switchFileName('SLIME_BLOCK'))),
+
+    ('DANDELION', averageColorFromFileName(switchFileName('YELLOW_DYE'))),
+    ('SUNFLOWER', averageColorFromFileName(switchFileName('YELLOW_DYE'))),
+    ('POTTED_DANDELION', averageColorFromFileName(switchFileName('YELLOW_DYE'))),
+    ('POPPY', averageColorFromFileName(switchFileName('RED_DYE'))),
+    ('CORNFLOWER', averageColorFromFileName(switchFileName('BLUE_DYE'))),
+    ('POTTED_POPPY', averageColorFromFileName(switchFileName('RED_DYE'))),
+    ('POTTED_CORNFLOWER', averageColorFromFileName(switchFileName('BLUE_DYE'))),
+    ('NETHER_SPROUTS', averageColorFromFileName(switchFileName('WARPED_PLANKS'))),
+    ('LEGACY_MYCEL', averageColorFromFileName(switchFileName('MYCELIUM'))),
+    ('LEGACY_NETHER_STALK', averageColorFromFileName(switchFileName('NETHER_WART'))),
+    ('LEGACY_SKULL_ITEM', averageColorFromFileName(textureFolderName + 'item/bone.png')),
+
+    ('CHEST', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_CHEST', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('TRAPPED_CHEST', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+    ('LEGACY_TRAPPED_CHEST', averageColorFromFileName(textureFolderName + 'block/oak_planks.png')),
+
+    ('LEGACY_BOAT_SPRUCE', averageColorFromFileName(textureFolderName + 'block/spruce_planks.png')),
+    ('LEGACY_BOAT_BIRCH', averageColorFromFileName(textureFolderName + 'block/birch_planks.png')),
+    ('LEGACY_BOAT_JUNGLE', averageColorFromFileName(textureFolderName + 'block/jungle_planks.png')),
+    ('LEGACY_BOAT_ACACIA', averageColorFromFileName(textureFolderName + 'block/acacia_planks.png')),
+    ('LEGACY_TOTEM', averageColorFromFileName(switchFileName('TOTEM_OF_UNDYING'))),
+    ('SWEET_BERRY_BUSH', averageColorFromFileName(textureFolderName + 'block/sweet_berry_bush_stage1.png')),
+
+    ('GHAST_TEAR', averageColorFromFileName(switchFileName('GLASS'))),
+    ('LEGACY_GHAST_TEAR', averageColorFromFileName(switchFileName('GLASS'))),
+    ('LIGHTNING_ROD', averageColorFromFileName(switchFileName('COPPER_INGOT'))),
+    ('LIGHT', averageColorFromFileName(switchFileName('LIGHT'))),
+    ('BLAZE_ROD', averageColorFromFileName(switchFileName('LAVA'))),
+    ('LEGACY_BLAZE_ROD', averageColorFromFileName(switchFileName('LAVA'))),
+]
+specificContainsMap: dict[str, np.ndarray[int]] = {}
+meetEndings: list[str] = ['_PLANKS', '_INGOT', '_SHARD', '_WEB', '_SCRAP',
+                          '_WOOL',# 16 colors
+                          '_CORAL_BLOCK',
                           '_SCUTE', '_ARMOR_TRIM_SMITHING_TEMPLATE',
                           ]
 meetEquals: list[str] = ['SPYGLASS', 'TINTED_GLASS', 'GLASS',
                          'LEATHER', 'ANDESITE', 'BOW', 'ARMOR_STAND', 'SAND',
-                         'STRING', 'COBWEB', 'STONE', 'GRANITE', 'DEEPSLATE', 'DIORITE', 'TUFF', 'CALCITE',
+                         'STRING', 'STONE', 'GRANITE', 'DEEPSLATE', 'DIORITE', 'TUFF', 'CALCITE',
                          'DIRT', 'EMERALD', 'MUD', 'BEDROCK', 'GRAVEL', 'ALLIUM', 'SEA_PICKLE', 'AZURE_BLUET',
-                         'DEAD_BUSH', 'DANDELION', 'POPPY', 'OXEYE_DAISY', 'CORNFLOWER', 'LILY_OF_THE_VALLEY',
-                         'SUGAR_CANE', 'SPORE_BLOSSOM', 'NETHER_SPROUTS', 'WEEPING_VINES', 'TWISTING_VINES', 'KELP',
-                         'TORCHFLOWER', 'PITCHER_PLANT', 'HANGING_ROOTS', 'BAMBOO',
-                         'TORCH', 'END_ROD', 'FARMLAND', 'LADDER', 'SNOW', 'NETHERRACK', 'BASALT',
+                         'DEAD_BUSH', 'OXEYE_DAISY', 'LILY_OF_THE_VALLEY',
+                         'SUGAR_CANE', 'SPORE_BLOSSOM', 'TWISTING_VINES',
+                         'TORCHFLOWER', 'HANGING_ROOTS', 'BAMBOO',
+                         'END_ROD', 'FARMLAND', 'LADDER', 'SNOW', 'NETHERRACK', 'BASALT',
                          'FURNACE', 'CACTUS', 'CLAY', 'JUKEBOX', 'JACK_O_LANTERN', 'MUSHROOM_STEM', 'CHAIN',
                          'SPAWNER', 'CRAFTING_TABLE', 'VINE', 'GLOW_LICHEN', 'MYCELIUM', 'LILY_PAD',
-                         'SCULK', 'ENCHANTING_TABLE', 'COMMAND_BLOCK', 'BEACON', 'ANVIL', 'TERRACOTTA',
-                         'SUNFLOWER', 'LILAC', 'ROSE_BUSH', 'PEONY', 'SHULKER_BOX', 'HEAVY_CORE', 'FERN', 'AZALEA',
+                         'SCULK', 'COMMAND_BLOCK', 'BEACON', 'ANVIL', 'TERRACOTTA',
+                         'LILAC', 'ROSE_BUSH', 'PEONY', 'SHULKER_BOX', 'HEAVY_CORE', 'FERN', 'AZALEA',
                          'TNT', 'TURTLE_EGG', 'SNIFFER_EGG', 'REPEATER', 'COMPARATOR', 'PISTON',
-                         'BARRIER', 'HOPPER', 'DISPENSER', 'DROPPER', 'LECTERN', 'TARGET', 'LEVER',
-                         'SEA_LANTERN', 'STRUCTURE_VOID', 'CONDUIT', 'SCAFFOLDING', 'OBSERVER', 'LIGHTNING_ROD',
-                         'DAYLIGHT_DETECTOR', 'HAY_BLOCK', 'TRIPWIRE_HOOK', 'NOTE_BLOCK', 'MUSHROOM_STEW',
+                         'BARRIER', 'HOPPER', 'DISPENSER', 'DROPPER', 'LECTERN', 'TARGET',
+                         'SEA_LANTERN', 'STRUCTURE_VOID', 'CONDUIT', 'SCAFFOLDING', 'OBSERVER',
+                         'DAYLIGHT_DETECTOR', 'HAY_BLOCK', 'NOTE_BLOCK', 'MUSHROOM_STEW',
                          'ACTIVATOR_RAIL', 'RAIL', 'SADDLE', 'MINECART', 'CARROT_ON_A_STICK', 'ELYTRA',
                          'STRUCTURE_BLOCK', 'FLINT', 'COOKED_PORKCHOP', 'PORKCHOP', 'GUNPOWDER', 'FEATHER',
                          'JIGSAW', 'RAW_IRON', 'RAW_GOLD', 'RAW_COPPER', 'POTATO', 'MAP',
                          'STICK', 'PAINTING', 'PAPER', 'BOOK', 'EGG', 'RECOVERY_COMPASS', 'COMPASS',
                          'COD', 'SALMON', 'TROPICAL_FISH', 'PUFFERFISH', 'SUGAR', 'CAKE', 'COOKIE', 'CRAFTER', 'SHEARS',
-                         'BEEF', 'GHAST_TEAR', 'SPIDER_EYE', 'ROTTEN_FLESH', 'BLAZE_ROD', 'CHICKEN', 'GLOW_INK_SAC',
-                         'COCOA_BEANS', 'INK_SAC', 'NETHER_BRICK', 'BRICK', 'LIGHT', 'WOLF_ARMOR',
+                         'BEEF', 'ROTTEN_FLESH', 'CHICKEN', 'GLOW_INK_SAC',
+                         'INK_SAC', 'NETHER_BRICK', 'BRICK', 'WOLF_ARMOR',
                          'BUNDLE', 'FISHING_ROD', 'BLAZE_POWDER', 'BREWING_STAND', 'CAULDRON', 'EXPERIENCE_BOTTLE',
-                         'WIND_CHARGE', 'MACE', 'ITEM_FRAME', 'GLOW_ITEM_FRAME', 'FLOWER_POT', 'CARROT', 'NETHER_STAR',
-                         'FIREWORK_ROCKET', 'FIREWORK_STAR', 'RABBIT', 'TOTEM_OF_UNDYING', 'SHULKER_SHELL',
-                         'MUTTON', 'LEAD', 'NAME_TAG', 'TRIDENT','NAUTILUS_SHELL', 'DISC_FRAGMENT_5',
+                         'WIND_CHARGE', 'MACE', 'ITEM_FRAME', 'GLOW_ITEM_FRAME', 'CARROT', 'NETHER_STAR',
+                         'FIREWORK_STAR', 'RABBIT', 'TOTEM_OF_UNDYING', 'SHULKER_SHELL',
+                         'MUTTON', 'LEAD', 'NAME_TAG', 'TRIDENT','NAUTILUS_SHELL',
+                         'BELL', 'LANTERN', 'SWEET_BERRIES', 'GLOW_BERRIES','CARTOGRAPHY_TABLE', 'FLETCHING_TABLE',
+                         'SMITHING_TABLE', 'CAMPFIRE','HEART_OF_THE_SEA', 'SUSPICIOUS_STEW','BARREL',
+                         'SMOKER', 'COMPOSTER', 'FROGSPAWN', 'BRUSH', 'TRIAL_KEY',
+                         'NETHER_PORTAL','OMINOUS_BOTTLE', 'LOOM', 'VAULT','SHROOMLIGHT',
+                         'OCHRE_FROGLIGHT', 'VERDANT_FROGLIGHT', 'PEARLESCENT_FROGLIGHT',
                          ]
 meetEquals.sort(key=lambda a: len(a), reverse=True)
 
@@ -190,7 +324,19 @@ for materialName in allMaterials:
             break
     if not foundFlag:
         notFounds.append(materialName)
+
+for i in defined:
+    if not i[0] in notFounds:
+        raise ModuleNotFoundError(i[0])
+    specificContainsMap[i[0]] = i[1]
+    materialMappings[i[0]].append(i[0])
+    satisfiedCounter += 1
+    notFounds.remove(i[0])
+
 cannotFindColor = []
+
+materialToPut:list[tuple[str,str]] = []
+legacyMaterialToPut:list[tuple[str,str]] = []
 for k in materialMappings.keys():
     try:
         colorR = specificContainsMap[k][0]
@@ -198,6 +344,12 @@ for k in materialMappings.keys():
         colorB = specificContainsMap[k][2]
         print('\033[38;2;%d;%d;%dm%s %s\033[0m' % (
             colorR, colorG, colorB, k, materialMappings[k]))
+        for m in materialMappings[k]:
+            if m.startswith('LEGACY_'):
+                m = m[7:]
+                legacyMaterialToPut.append((m,hex((colorR<<16) + (colorG<<8) + colorB).replace('0x','#')))
+            else:
+                materialToPut.append((m, hex((colorR << 16) + (colorG << 8) + colorB).replace('0x', '#')))
     except Exception as e:
         if specificContainsMap[k] is None:
             cannotFindColor.append(k)
@@ -206,5 +358,31 @@ for k in materialMappings.keys():
             raise e
 
 print('satisfied/total:%d/%d' % (satisfiedCounter, len(allMaterials)))
-print(notFounds)
-print(cannotFindColor)
+# print(notFounds)
+# print(cannotFindColor)
+materialToPut.sort(key=lambda m:hashStringLikeJava(m[0]))
+legacyMaterialToPut.sort(key=lambda m:hashStringLikeJava(m[0]))
+print(materialToPut)
+print(legacyMaterialToPut)
+
+
+#collision test
+for l in [materialToPut,legacyMaterialToPut]:
+    hashSet:set[int] = set()
+    collisions = 0
+    for s in l:
+        hashed = hashStringLikeJava(s[0])
+        if hashed in hashSet:
+            collisions += 1
+        else:
+            hashSet.add(hashed)
+    print('collisions:%d'%collisions)
+
+with open('materialColorMap',mode='w') as f:
+    print('materialToPut size:%d'%len(materialToPut))
+    for m in materialToPut:
+        f.write('put("%s",net.md_5.bungee.api.ChatColor.of("%s"));\n'%m)
+with open('legacyMaterialColorMap',mode='w') as f:
+    print('legacyMaterialToPut size:%d'%len(legacyMaterialToPut))
+    for m in legacyMaterialToPut:
+        f.write('put("%s",net.md_5.bungee.api.ChatColor.of("%s"));\n'%m)
